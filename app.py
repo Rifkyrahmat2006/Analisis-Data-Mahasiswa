@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request
-import math
+import os
 
 app = Flask(__name__)
 
@@ -87,7 +87,14 @@ def calculate_variance(data, field):
     return squared_diff / len(data)
 
 def calculate_std_dev(data, field):
-    return math.sqrt(calculate_variance(data, field))
+    variance = calculate_variance(data, field)
+    # Implementasi manual untuk square root
+    if variance < 0:
+        return 0
+    x = variance
+    for _ in range(10):  # 10 iterasi cukup untuk presisi yang baik
+        x = (x + variance/x) / 2
+    return x
 
 def calculate_quartiles(data, field):
     sorted_data = sorted([item[field] for item in data])
@@ -137,7 +144,7 @@ def get_paginated_data(page=1, per_page=10):
 
 # Fungsi untuk menghitung total halaman
 def get_total_pages(per_page=10):
-    return math.ceil(len(data) / per_page)
+    return (len(data) + per_page - 1) // per_page
 
 @app.route('/')
 def index():
@@ -219,4 +226,5 @@ def get_stats():
     return jsonify(stats)
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port) 
