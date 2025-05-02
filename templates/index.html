@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 100%;
+        }
+        .stats-card {
+            margin-bottom: 20px;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+        .metric-card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <h1 class="text-center mb-4">Data Analysis Dashboard</h1>
+        
+        <ul class="nav nav-tabs" id="metricTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="ipk-tab" data-bs-toggle="tab" data-bs-target="#ipk" type="button" role="tab">IPK</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="ips-rata-tab" data-bs-toggle="tab" data-bs-target="#ips-rata" type="button" role="tab">IPS Rata-rata</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="ips-akhir-tab" data-bs-toggle="tab" data-bs-target="#ips-akhir" type="button" role="tab">IPS Semester Akhir</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="mk-tidak-lulus-tab" data-bs-toggle="tab" data-bs-target="#mk-tidak-lulus" type="button" role="tab">Mata Kuliah Tidak Lulus</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="cuti-tab" data-bs-toggle="tab" data-bs-target="#cuti" type="button" role="tab">Cuti Akademik</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="semester-tab" data-bs-toggle="tab" data-bs-target="#semester" type="button" role="tab">Jumlah Semester</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="metricTabsContent">
+            <!-- IPK Tab -->
+            <div class="tab-pane fade show active" id="ipk" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Data IPK</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Lengkap</th>
+                                                <th>IPK</th>
+                                                <th>Status Kelulusan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ipkTableBody">
+                                            <!-- Data will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center" id="ipkPagination">
+                                        <!-- Pagination will be added here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Statistik IPK</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="ipkStats">
+                                    <!-- Statistics will be populated here -->
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="ipkChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IPS Rata-rata Tab -->
+            <div class="tab-pane fade" id="ips-rata" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Data IPS Rata-rata</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Lengkap</th>
+                                                <th>IPS Rata-rata</th>
+                                                <th>Status Kelulusan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ipsRataTableBody">
+                                            <!-- Data will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center" id="ipsRataPagination">
+                                        <!-- Pagination will be added here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Statistik IPS Rata-rata</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="ipsRataStats">
+                                    <!-- Statistics will be populated here -->
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="ipsRataChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IPS Semester Akhir Tab -->
+            <div class="tab-pane fade" id="ips-akhir" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Data IPS Semester Akhir</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Lengkap</th>
+                                                <th>IPS Semester Akhir</th>
+                                                <th>Status Kelulusan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ipsAkhirTableBody">
+                                            <!-- Data will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center" id="ipsAkhirPagination">
+                                        <!-- Pagination will be added here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Statistik IPS Semester Akhir</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="ipsAkhirStats">
+                                    <!-- Statistics will be populated here -->
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="ipsAkhirChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mata Kuliah Tidak Lulus Tab -->
+            <div class="tab-pane fade" id="mk-tidak-lulus" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Data Mata Kuliah Tidak Lulus</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Lengkap</th>
+                                                <th>Jumlah MK Tidak Lulus</th>
+                                                <th>Status Kelulusan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="mkTidakLulusTableBody">
+                                            <!-- Data will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center" id="mkTidakLulusPagination">
+                                        <!-- Pagination will be added here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Statistik Mata Kuliah Tidak Lulus</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="mkTidakLulusStats">
+                                    <!-- Statistics will be populated here -->
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="mkTidakLulusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cuti Akademik Tab -->
+            <div class="tab-pane fade" id="cuti" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Data Cuti Akademik</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Lengkap</th>
+                                                <th>Jumlah Cuti</th>
+                                                <th>Status Kelulusan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="cutiTableBody">
+                                            <!-- Data will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center" id="cutiPagination">
+                                        <!-- Pagination will be added here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Statistik Cuti Akademik</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="cutiStats">
+                                    <!-- Statistics will be populated here -->
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="cutiChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jumlah Semester Tab -->
+            <div class="tab-pane fade" id="semester" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Data Jumlah Semester</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Lengkap</th>
+                                                <th>Jumlah Semester</th>
+                                                <th>Status Kelulusan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="semesterTableBody">
+                                            <!-- Data will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center" id="semesterPagination">
+                                        <!-- Pagination will be added here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Statistik Jumlah Semester</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="semesterStats">
+                                    <!-- Statistics will be populated here -->
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="semesterChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/chart-boxplot.js') }}"></script>
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let allData = [];
+        let stats = {};
+        let charts = {}; // Store chart instances
+
+        // Fungsi untuk memuat data dengan pagination
+        async function loadData(page = 1) {
+            try {
+                const [dataResponse, statsResponse] = await Promise.all([
+                    fetch(`/api/data?page=${page}`),
+                    fetch('/api/stats')
+                ]);
+                
+                if (!dataResponse.ok || !statsResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const dataResult = await dataResponse.json();
+                const statsResult = await statsResponse.json();
+                
+                currentPage = dataResult.current_page;
+                totalPages = dataResult.total_pages;
+                allData = dataResult.data;
+                stats = statsResult;
+                
+                // Update semua metrik
+                await updateAllMetrics();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        // Fungsi untuk mengupdate semua metrik
+        async function updateAllMetrics() {
+            try {
+                // IPK
+                await Promise.all([
+                    updateTable('ipkTableBody', allData, 'IPK'),
+                    updatePagination('ipkPagination', currentPage, totalPages),
+                    updateStats('ipkStats', 'IPK'),
+                    updateChart('ipkChart', allData, 'IPK')
+                ]);
+                
+                // IPS Rata-rata
+                await Promise.all([
+                    updateTable('ipsRataTableBody', allData, 'IPS_Rata_rata'),
+                    updatePagination('ipsRataPagination', currentPage, totalPages),
+                    updateStats('ipsRataStats', 'IPS_Rata_rata'),
+                    updateChart('ipsRataChart', allData, 'IPS_Rata_rata')
+                ]);
+                
+                // IPS Semester Akhir
+                await Promise.all([
+                    updateTable('ipsAkhirTableBody', allData, 'IPS_Semester_Akhir'),
+                    updatePagination('ipsAkhirPagination', currentPage, totalPages),
+                    updateStats('ipsAkhirStats', 'IPS_Semester_Akhir'),
+                    updateChart('ipsAkhirChart', allData, 'IPS_Semester_Akhir')
+                ]);
+                
+                // Mata Kuliah Tidak Lulus
+                await Promise.all([
+                    updateTable('mkTidakLulusTableBody', allData, 'Mata_Kuliah_Tidak_Lulus'),
+                    updatePagination('mkTidakLulusPagination', currentPage, totalPages),
+                    updateStats('mkTidakLulusStats', 'Mata_Kuliah_Tidak_Lulus'),
+                    updateChart('mkTidakLulusChart', allData, 'Mata_Kuliah_Tidak_Lulus')
+                ]);
+                
+                // Cuti Akademik
+                await Promise.all([
+                    updateTable('cutiTableBody', allData, 'Jumlah_Cuti_Akademik'),
+                    updatePagination('cutiPagination', currentPage, totalPages),
+                    updateStats('cutiStats', 'Jumlah_Cuti_Akademik'),
+                    updateChart('cutiChart', allData, 'Jumlah_Cuti_Akademik')
+                ]);
+                
+                // Jumlah Semester
+                await Promise.all([
+                    updateTable('semesterTableBody', allData, 'Jumlah_Semester'),
+                    updatePagination('semesterPagination', currentPage, totalPages),
+                    updateStats('semesterStats', 'Jumlah_Semester'),
+                    updateChart('semesterChart', allData, 'Jumlah_Semester')
+                ]);
+            } catch (error) {
+                console.error('Error updating metrics:', error);
+            }
+        }
+
+        // Fungsi untuk mengupdate tabel
+        function updateTable(tableId, data, field) {
+            const tableBody = document.getElementById(tableId);
+            tableBody.innerHTML = '';
+            
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${(currentPage - 1) * 10 + index + 1}</td>
+                    <td>${item['Nama Lengkap']}</td>
+                    <td>${item[field]}</td>
+                    <td>${item['Status Kelulusan'] === 1 ? 'Lulus' : 'Tidak Lulus'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fungsi untuk mengupdate statistik
+        function updateStats(statsId, field) {
+            const statsDiv = document.getElementById(statsId);
+            const fieldStats = stats[field];
+            
+            statsDiv.innerHTML = `
+                <table class="table">
+                    <tr>
+                        <td>Mean (Rata-rata)</td>
+                        <td>${fieldStats.mean.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Median</td>
+                        <td>${fieldStats.median.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Modus</td>
+                        <td>${fieldStats.mode.join(', ')}</td>
+                    </tr>
+                    <tr>
+                        <td>Range</td>
+                        <td>${fieldStats.range.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Varians</td>
+                        <td>${fieldStats.variance.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Standar Deviasi</td>
+                        <td>${fieldStats.std_dev.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Q1 (Kuartil 1)</td>
+                        <td>${fieldStats.quartiles.q1.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Q2 (Median)</td>
+                        <td>${fieldStats.quartiles.q2.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Q3 (Kuartil 3)</td>
+                        <td>${fieldStats.quartiles.q3.toFixed(2)}</td>
+                    </tr>
+                </table>
+            `;
+        }
+
+        // Fungsi untuk mengupdate chart
+        async function updateChart(chartId, data, field) {
+            try {
+                const ctx = document.getElementById(chartId).getContext('2d');
+                
+                // Destroy existing chart if it exists
+                if (charts[chartId]) {
+                    charts[chartId].destroy();
+                    charts[chartId] = null;
+                }
+                
+                // Calculate statistics for the boxplot
+                const values = data.map(item => item[field]);
+                const sorted = [...values].sort((a, b) => a - b);
+                const q1 = sorted[Math.floor(sorted.length * 0.25)];
+                const median = sorted[Math.floor(sorted.length * 0.5)];
+                const q3 = sorted[Math.floor(sorted.length * 0.75)];
+                const min = sorted[0];
+                const max = sorted[sorted.length - 1];
+                
+                // Create new chart
+                charts[chartId] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Min', 'Q1', 'Median', 'Q3', 'Max'],
+                        datasets: [{
+                            label: field,
+                            data: [min, q1, median, q3, max],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.5)',
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(255, 206, 86, 0.5)',
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(255, 99, 132, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: field
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Nilai'
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error(`Error updating chart ${chartId}:`, error);
+            }
+        }
+
+        // Fungsi untuk mengupdate pagination
+        function updatePagination(paginationId, currentPage, totalPages) {
+            const pagination = document.getElementById(paginationId);
+            pagination.innerHTML = '';
+            
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `
+                <a class="page-link" href="#" aria-label="Previous" onclick="loadData(${currentPage - 1})">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            `;
+            pagination.appendChild(prevLi);
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="loadData(${i})">${i}</a>`;
+                pagination.appendChild(li);
+            }
+            
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `
+                <a class="page-link" href="#" aria-label="Next" onclick="loadData(${currentPage + 1})">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            `;
+            pagination.appendChild(nextLi);
+        }
+
+        // Load data saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await loadData();
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

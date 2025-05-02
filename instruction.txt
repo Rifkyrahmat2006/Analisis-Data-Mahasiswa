@@ -1,0 +1,75 @@
+INSTRUKSI PEMBUATAN PROGRAM ANALISIS DATA STATISTIKA DESKRIPTIF
+
+1. Persiapan Lingkungan
+   - Install Python 3.x
+   - Install Flask: pip install flask
+   - Buat folder project dengan struktur:
+     /project
+       ├── static/
+       │   ├── css/
+       │   └── js/
+       ├── templates/
+       └── app.py
+
+2. Setup Dasar Flask
+   - Buat file app.py dengan konfigurasi dasar Flask
+   - Setup route untuk halaman utama
+   - Setup route untuk API endpoint
+
+3. Input Data
+   - Buat variabel data di dalam app.py dengan format:
+     data = [
+         {"id": 1, "nilai": 85},
+         {"id": 2, "nilai": 90},
+         # ... tambahkan data sesuai kebutuhan
+     ]
+
+4. Implementasi Fungsi Statistik Deskriptif
+   - Mean (Rata-rata)
+     - Jumlahkan semua nilai
+     - Bagi dengan jumlah data
+   
+   - Median
+     - Urutkan data
+     - Ambil nilai tengah
+     - Jika jumlah data genap, ambil rata-rata dua nilai tengah
+   
+   - Modus
+     - Hitung frekuensi setiap nilai
+     - Ambil nilai dengan frekuensi tertinggi
+   
+   - Range
+     - Nilai maksimum - nilai minimum
+   
+   - Varians
+     - Hitung rata-rata
+     - Hitung selisih setiap data dengan rata-rata
+     - Kuadratkan selisih
+     - Jumlahkan semua kuadrat
+     - Bagi dengan jumlah data
+   
+   - Standar Deviasi
+     - Akar kuadrat dari varians
+
+   - Kuartil
+
+5. Frontend Development
+   - Buat file index.html di folder templates
+   - Implementasi Chart.js untuk visualisasi:
+     - Bar Chart untuk distribusi data
+     - Line Chart untuk tren data
+     - Box Plot untuk visualisasi statistik
+   - Tambahkan tabel untuk menampilkan hasil perhitungan
+
+6. API Endpoints
+   - /api/data - Mengembalikan data mentah
+   - /api/stats - Mengembalikan hasil perhitungan statistik
+   - /api/chart - Mengembalikan data untuk visualisasi
+
+7. Implementasi UI/UX
+   - Buat tampilan responsif
+
+Catatan Penting:
+- Semua perhitungan statistik harus diimplementasikan secara manual tanpa library
+- Pastikan validasi input data
+- Buat UI yang user-friendly
