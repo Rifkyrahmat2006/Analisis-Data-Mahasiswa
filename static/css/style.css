@@ -9,7 +9,7 @@ body {
 }
 
 .card-header {
-    background: linear-gradient(to right, #40b294, #ebbd00);
+    background: linear-gradient(to right, #17EAd9, #6078ea);
     border-bottom: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 10px 10px 0 0 !important;
 }
