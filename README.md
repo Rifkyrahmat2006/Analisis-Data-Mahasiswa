@@ -27,7 +27,6 @@ Aplikasi Analisis Data Mahasiswa adalah dashboard interaktif yang menyajikan dat
 - **Frontend**: HTML, CSS, JavaScript
 - **Styling**: Bootstrap 5
 - **Visualisasi**: Chart.js
-- **Data Processing**: NumPy, Pandas (implisit dalam perhitungan statistik)
 
 ## Struktur Aplikasi
 
