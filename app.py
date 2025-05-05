@@ -1,5 +1,4 @@
 from flask import Flask, render_template, jsonify, request
-import os
 
 app = Flask(__name__)
 
@@ -154,16 +153,60 @@ def index():
 def get_data():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
+    search_query = request.args.get('search', '').lower()
     
-    paginated_data = get_paginated_data(page, per_page)
-    total_pages = get_total_pages(per_page)
-    
-    return jsonify({
-        'data': paginated_data,
-        'total_pages': total_pages,
-        'current_page': page,
-        'total_items': len(data)
-    })
+    # Jika ada query pencarian, filter data terlebih dahulu
+    if search_query:
+        filtered_data = []
+        for item in data:
+            # Cari di nama dan nilai
+            if search_query in item["Nama Lengkap"].lower() or \
+               str(item["IPK"]).lower().startswith(search_query) or \
+               str(item["IPS Rata-rata"]).lower().startswith(search_query) or \
+               str(item["IPS Semester Akhir"]).lower().startswith(search_query) or \
+               str(item["Mata Kuliah Tidak Lulus"]).lower().startswith(search_query) or \
+               str(item["Jumlah Cuti Akademik"]).lower().startswith(search_query) or \
+               str(item["Jumlah Semester"]).lower().startswith(search_query) or \
+               str(item["Status Kelulusan"]).lower().startswith(search_query):
+                filtered_data.append(item)
+        
+        # Pagination untuk data yang sudah difilter
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        
+        paginated_filtered_data = []
+        for item in filtered_data[start_idx:end_idx]:
+            formatted_item = {
+                "Nama Lengkap": item["Nama Lengkap"],
+                "IPK": item["IPK"],
+                "IPS_Rata_rata": item["IPS Rata-rata"],
+                "IPS_Semester_Akhir": item["IPS Semester Akhir"],
+                "Mata_Kuliah_Tidak_Lulus": item["Mata Kuliah Tidak Lulus"],
+                "Jumlah_Cuti_Akademik": item["Jumlah Cuti Akademik"],
+                "Jumlah_Semester": item["Jumlah Semester"],
+                "Status_Kelulusan": item["Status Kelulusan"]
+            }
+            paginated_filtered_data.append(formatted_item)
+        
+        total_filtered_pages = (len(filtered_data) + per_page - 1) // per_page
+        
+        return jsonify({
+            'data': paginated_filtered_data,
+            'total_pages': total_filtered_pages,
+            'current_page': page,
+            'total_items': len(filtered_data)
+        })
+    else:
+        # Jika tidak ada query pencarian, gunakan pagination normal
+        paginated_data = get_paginated_data(page, per_page)
+        total_pages = get_total_pages(per_page)
+        
+        return jsonify({
+            'data': paginated_data,
+            'total_pages': total_pages,
+            'current_page': page,
+            'total_items': len(data)
+        })
 
 @app.route('/api/stats')
 def get_stats():
@@ -175,7 +218,8 @@ def get_stats():
             "range": calculate_range(data, "IPK"),
             "variance": calculate_variance(data, "IPK"),
             "std_dev": calculate_std_dev(data, "IPK"),
-            "quartiles": calculate_quartiles(data, "IPK")
+            "quartiles": calculate_quartiles(data, "IPK"),
+            "all_values": [item["IPK"] for item in data]
         },
         "IPS_Rata_rata": {
             "mean": calculate_mean(data, "IPS Rata-rata"),
@@ -184,7 +228,8 @@ def get_stats():
             "range": calculate_range(data, "IPS Rata-rata"),
             "variance": calculate_variance(data, "IPS Rata-rata"),
             "std_dev": calculate_std_dev(data, "IPS Rata-rata"),
-            "quartiles": calculate_quartiles(data, "IPS Rata-rata")
+            "quartiles": calculate_quartiles(data, "IPS Rata-rata"),
+            "all_values": [item["IPS Rata-rata"] for item in data]
         },
         "IPS_Semester_Akhir": {
             "mean": calculate_mean(data, "IPS Semester Akhir"),
@@ -193,7 +238,8 @@ def get_stats():
             "range": calculate_range(data, "IPS Semester Akhir"),
             "variance": calculate_variance(data, "IPS Semester Akhir"),
             "std_dev": calculate_std_dev(data, "IPS Semester Akhir"),
-            "quartiles": calculate_quartiles(data, "IPS Semester Akhir")
+            "quartiles": calculate_quartiles(data, "IPS Semester Akhir"),
+            "all_values": [item["IPS Semester Akhir"] for item in data]
         },
         "Mata_Kuliah_Tidak_Lulus": {
             "mean": calculate_mean(data, "Mata Kuliah Tidak Lulus"),
@@ -202,7 +248,8 @@ def get_stats():
             "range": calculate_range(data, "Mata Kuliah Tidak Lulus"),
             "variance": calculate_variance(data, "Mata Kuliah Tidak Lulus"),
             "std_dev": calculate_std_dev(data, "Mata Kuliah Tidak Lulus"),
-            "quartiles": calculate_quartiles(data, "Mata Kuliah Tidak Lulus")
+            "quartiles": calculate_quartiles(data, "Mata Kuliah Tidak Lulus"),
+            "all_values": [item["Mata Kuliah Tidak Lulus"] for item in data]
         },
         "Jumlah_Cuti_Akademik": {
             "mean": calculate_mean(data, "Jumlah Cuti Akademik"),
@@ -211,7 +258,8 @@ def get_stats():
             "range": calculate_range(data, "Jumlah Cuti Akademik"),
             "variance": calculate_variance(data, "Jumlah Cuti Akademik"),
             "std_dev": calculate_std_dev(data, "Jumlah Cuti Akademik"),
-            "quartiles": calculate_quartiles(data, "Jumlah Cuti Akademik")
+            "quartiles": calculate_quartiles(data, "Jumlah Cuti Akademik"),
+            "all_values": [item["Jumlah Cuti Akademik"] for item in data]
         },
         "Jumlah_Semester": {
             "mean": calculate_mean(data, "Jumlah Semester"),
@@ -220,11 +268,11 @@ def get_stats():
             "range": calculate_range(data, "Jumlah Semester"),
             "variance": calculate_variance(data, "Jumlah Semester"),
             "std_dev": calculate_std_dev(data, "Jumlah Semester"),
-            "quartiles": calculate_quartiles(data, "Jumlah Semester")
+            "quartiles": calculate_quartiles(data, "Jumlah Semester"),
+            "all_values": [item["Jumlah Semester"] for item in data]
         }
     }
     return jsonify(stats)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port) 
+    app.run(debug=True, host='127.0.0.1', port=5000)
