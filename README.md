@@ -6,7 +6,7 @@ Aplikasi web interaktif untuk menganalisis dan memvisualisasikan data akademik m
 
 Aplikasi Analisis Data Mahasiswa adalah dashboard interaktif yang menyajikan data akademik mahasiswa dan statistik deskriptif mereka. Aplikasi ini memungkinkan pengguna untuk melihat, mencari, dan menganalisis data mahasiswa berdasarkan berbagai metrik akademik seperti IPK, IPS rata-rata, IPS semester akhir, jumlah mata kuliah tidak lulus, jumlah cuti akademik, dan jumlah semester.
 
-## Fitur Program
+## Fitur Program ini
 
 - **Tampilan Data Tabular**: Menampilkan data mahasiswa dalam format tabel yang terorganisir
 - **Statistik Deskriptif**: Menghitung dan menampilkan statistik deskriptif untuk setiap metrik:
