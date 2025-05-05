@@ -8,6 +8,8 @@ Aplikasi Analisis Data Mahasiswa adalah dashboard interaktif yang menyajikan dat
 
 ## Tujuan
 
+Tujuan dari aplikasi ini adalah untuk membantu pengguna dalam menganalisis data akademik mahasiswa dan memvisualisasikan statistik deskriptif mereka. 
+
 ## Fitur
 
 - **Tampilan Data Tabular**: Menampilkan data mahasiswa dalam format tabel yang terorganisir
